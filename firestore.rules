@@ -1,0 +1,44 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // User profiles
+    match /users/{userId} {
+      // Logged-in users can read profiles
+      allow read: if request.auth != null;
+
+      // Create own profile
+      allow create: if request.auth != null && request.auth.uid == userId;
+
+      // Full update/delete on own document
+      allow update, delete: if request.auth != null && request.auth.uid == userId;
+
+      // Allow non-owners to: 
+      // 1) add/remove their UID in someone else's friendRequests
+      // 2) increment 'reports' by exactly 1 and optionally set bannedUntil
+      allow update: if request.auth != null && request.auth.uid != userId
+        && (
+          (
+            // Friend request mutation: friendRequests array contains caller UID after change
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['friendRequests']) &&
+            request.resource.data.friendRequests.hasOnly(resource.data.friendRequests.concat([request.auth.uid]))
+          )
+          ||
+          (
+            // Report mutation: only 'reports' and (optionally) 'bannedUntil' are changed,
+            // and 'reports' increases by exactly 1
+            request.resource.data.diff(resource.data).changedKeys().hasOnly(['reports', 'bannedUntil']) &&
+            request.resource.data.reports == resource.data.reports + 1
+          )
+        );
+    }
+
+    // Global chat collection
+    match /messages/{messageId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && request.auth.uid == resource.data.uid;
+    }
+  }
+}

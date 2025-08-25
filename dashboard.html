@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="menu">
+      <span class="dots">⋮</span>
+      <div class="dropdown">
+        <p id="userEmail"></p>
+        <a href="profile.html">Profile</a>
+        <button id="logoutBtn">Logout</button>
+      </div>
+    </div>
+    <h1>Dashboard</h1>
+  </header>
+  <main>
+    <p>Welcome to your dashboard!</p>
+  </main>
+  <script type="module" src="js/dashboard.js"></script>
+
+    <!-- 3-dot menu -->
+    <div class="dropdown" style="position:absolute; top:10px; right:10px;">
+      <button class="dropbtn">⋮</button>
+      <div class="dropdown-content">
+        <a href="profile.html">Profile</a>
+        <a href="edit-profile.html">Edit Profile</a>
+        <a href="friends.html">Friends</a>
+        <a href="#" id="logoutBtn">Logout</a>
+      </div>
+    </div>
+    
+</body>
+</html>
